@@ -1,6 +1,6 @@
 {
-  "name": "@mps/nestjs-cqrs",
-  "version": "1.0.0-next",
+  "name": "mps-nestjs-cqrs",
+  "version": "1.0.0-next.5",
   "description": "A lightweight CQRS module for Nest framework (node.js)",
   "license": "MIT",
   "url": "https://github.com/nestjs/cqrs#readme",
@@ -9,9 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "format": "prettier --write \"**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "prepublish:next": "npm run build",
+    "prepublish": "npm run build",
     "publish:next": "npm publish --access public --tag next",
-    "prepublish:npm": "npm run build",
     "publish:npm": "npm publish --access public",
     "prerelease": "npm run build",
     "release": "release-it"

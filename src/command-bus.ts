@@ -1,11 +1,10 @@
 import { Injectable, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import 'reflect-metadata';
-import { COMMAND_HANDLER_METADATA, COMMAND_METADATA } from './decorators/constants';
+import { COMMAND_HANDLER_METADATA, COMMAND_NAME_METADATA } from './decorators/constants';
 import { CommandHandlerNotFoundException } from './exceptions/command-not-found.exception';
 import { DefaultCommandPubSub } from './helpers/default-command-pubsub';
 import { InvalidCommandHandlerException } from './index';
-import { CommandMetadata } from './interfaces/commands/command-metadata.interface';
 import {
   ICommand,
   ICommandBus,
@@ -37,7 +36,7 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
   }
 
   execute<T extends CommandBase, R = any>(command: T): Promise<R> {
-    const commandId = this.getCommandId(command);
+    const commandId = this.getCommandName(command);
     const handler = this.handlers.get(commandId);
     if (!handler) {
       throw new CommandHandlerNotFoundException(commandId);
@@ -55,13 +54,12 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
   }
 
   resolveCommandTypeByName(name: string) {
+    name = name.toLowerCase();
     const handler = this.handlers.get(name);
     if (handler === undefined)
       throw new CommandHandlerNotFoundException(name);
 
-    const prototype = Object.getPrototypeOf(handler);
-    console.log('prototype =>', prototype);
-    return this.reflectCommand(prototype);
+    return this.reflectCommand(handler.constructor as any);
   }
 
   protected registerHandler(handler: CommandHandlerType) {
@@ -76,17 +74,13 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
     this.bind(instance as ICommandHandler<CommandBase>, target);
   }
 
-  private getCommandId(command: CommandBase): string {
+
+  private getCommandName(command: CommandBase) {
     const { constructor: commandType } = Object.getPrototypeOf(command);
-    const commandMetadata: CommandMetadata = Reflect.getMetadata(
-      COMMAND_METADATA,
+    return Reflect.getMetadata(
+      COMMAND_NAME_METADATA,
       commandType,
     );
-    if (!commandMetadata) {
-      throw new CommandHandlerNotFoundException(commandType.name);
-    }
-
-    return commandMetadata.id;
   }
 
   private reflectCommand(handler: CommandHandlerType) : Type<ICommand> {
@@ -102,22 +96,10 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
       handler
     );
 
-    const commandMetadata: CommandMetadata = Reflect.getMetadata(
-      COMMAND_METADATA,
+    return Reflect.getMetadata(
+      COMMAND_NAME_METADATA,
       command
     );
-
-    return commandMetadata.name;
-  }
-
-  private reflectCommandId(handler: CommandHandlerType): string | undefined {
-    const command: Type<ICommand> = this.reflectCommand(handler);
-
-    const commandMetadata: CommandMetadata = Reflect.getMetadata(
-      COMMAND_METADATA,
-      command,
-    );
-    return commandMetadata.id;
   }
 
   private useDefaultPublisher() {
