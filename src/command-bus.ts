@@ -46,12 +46,22 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
     return handler.execute(command);
   }
 
-  bind<T extends CommandBase>(handler: ICommandHandler<T>, id: string) {
-    this.handlers.set(id, handler);
+  bind<T extends CommandBase>(handler: ICommandHandler<T>, name: string) {
+    this.handlers.set(name, handler);
   }
 
   register(handlers: CommandHandlerType[] = []) {
     handlers.forEach((handler) => this.registerHandler(handler));
+  }
+
+  resolveCommandTypeByName(name: string) {
+    const handler = this.handlers.get(name);
+    if (handler === undefined)
+      throw new CommandHandlerNotFoundException(name);
+
+    const prototype = Object.getPrototypeOf(handler);
+    console.log('prototype =>', prototype);
+    return this.reflectCommand(prototype);
   }
 
   protected registerHandler(handler: CommandHandlerType) {
@@ -59,7 +69,7 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
     if (!instance) {
       return;
     }
-    const target = this.reflectCommandId(handler);
+    const target = this.reflectCommandName(handler);
     if (!target) {
       throw new InvalidCommandHandlerException();
     }
@@ -79,11 +89,30 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
     return commandMetadata.id;
   }
 
-  private reflectCommandId(handler: CommandHandlerType): string | undefined {
-    const command: Type<ICommand> = Reflect.getMetadata(
+  private reflectCommand(handler: CommandHandlerType) : Type<ICommand> {
+    return Reflect.getMetadata(
       COMMAND_HANDLER_METADATA,
       handler,
     );
+  }
+
+  private reflectCommandName(handler: CommandHandlerType) {
+    const command: Type<ICommand> = Reflect.getMetadata(
+      COMMAND_HANDLER_METADATA,
+      handler
+    );
+
+    const commandMetadata: CommandMetadata = Reflect.getMetadata(
+      COMMAND_METADATA,
+      command
+    );
+
+    return commandMetadata.name;
+  }
+
+  private reflectCommandId(handler: CommandHandlerType): string | undefined {
+    const command: Type<ICommand> = this.reflectCommand(handler);
+
     const commandMetadata: CommandMetadata = Reflect.getMetadata(
       COMMAND_METADATA,
       command,

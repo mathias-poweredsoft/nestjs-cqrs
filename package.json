@@ -1,6 +1,6 @@
 {
-  "name": "@nestjs/cqrs",
-  "version": "8.0.4",
+  "name": "@mps/nestjs-cqrs",
+  "version": "1.0.0-next",
   "description": "A lightweight CQRS module for Nest framework (node.js)",
   "license": "MIT",
   "url": "https://github.com/nestjs/cqrs#readme",
