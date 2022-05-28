@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { ICommand } from '../index';
-import { COMMAND_HANDLER_METADATA, COMMAND_METADATA, COMMAND_NAME_METADATA } from './constants';
-import { v4 } from 'uuid';
+import { COMMAND_HANDLER_METADATA, COMMAND_NAME_METADATA } from './constants';
 import { Type } from '@nestjs/common';
 
 /**

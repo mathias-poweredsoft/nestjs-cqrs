@@ -2,7 +2,6 @@ import { Injectable, Logger, OnModuleDestroy, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { from, Observable, Subscription } from 'rxjs';
 import { filter, mergeMap } from 'rxjs/operators';
-import { isFunction } from 'util';
 import { CommandBus } from './command-bus';
 import { EVENTS_HANDLER_METADATA, SAGA_METADATA } from './decorators/constants';
 import { InvalidSagaException } from './exceptions';
@@ -122,7 +121,7 @@ export class EventBus<EventBase extends IEvent = IEvent>
   }
 
   protected registerSaga(saga: ISaga<EventBase>) {
-    if (!isFunction(saga)) {
+    if (typeof saga !== 'function') {
       throw new InvalidSagaException();
     }
     const stream$ = saga(this);

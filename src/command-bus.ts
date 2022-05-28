@@ -91,10 +91,7 @@ export class CommandBus<CommandBase extends ICommand = ICommand>
   }
 
   private reflectCommandName(handler: CommandHandlerType) {
-    const command: Type<ICommand> = Reflect.getMetadata(
-      COMMAND_HANDLER_METADATA,
-      handler
-    );
+    const command = this.reflectCommand(handler);
 
     return Reflect.getMetadata(
       COMMAND_NAME_METADATA,

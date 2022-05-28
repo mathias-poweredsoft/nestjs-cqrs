@@ -1,9 +1,9 @@
 {
   "name": "mps-nestjs-cqrs",
-  "version": "1.0.0-next.5",
+  "version": "1.0.0-next.6",
   "description": "A lightweight CQRS module for Nest framework (node.js)",
   "license": "MIT",
-  "url": "https://github.com/nestjs/cqrs#readme",
+  "url": "https://github.com/mathias-poweredsoft/nestjs-cqrs",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.json",
@@ -59,6 +59,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nestjs/cqrs"
+    "url": "https://github.com/mathias-poweredsoft/nestjs-cqrs"
   }
 }
